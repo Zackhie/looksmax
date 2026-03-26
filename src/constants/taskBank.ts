@@ -1,0 +1,436 @@
+import { TaskCategory } from '../types';
+
+export type WeightKey =
+  | 'symmetry'
+  | 'jawlineDefinition'
+  | 'facialDefinition'
+  | 'skinClarity'
+  | 'waterRetention';
+
+export interface TaskTemplate {
+  id: string;
+  title: string;
+  description: string;
+  category: TaskCategory;
+  estimatedMinutes: number;
+  weightKey: WeightKey;
+  /** daily = always included if selected; rotating = skip if used yesterday */
+  frequency: 'daily' | 'rotating';
+  /** Tags for selection logic */
+  tags?: string[];
+}
+
+export const TASK_BANK: TaskTemplate[] = [
+  // ── SKINCARE (8) ─────────────────────────────────────────────
+  {
+    id: 'skin-am-routine',
+    title: 'Morning skincare routine',
+    description: 'Gentle cleanse → Vitamin C serum → Moisturizer → SPF 30+ sunscreen. Do every morning.',
+    category: 'skincare',
+    estimatedMinutes: 10,
+    weightKey: 'skinClarity',
+    frequency: 'daily',
+    tags: ['morning'],
+  },
+  {
+    id: 'skin-pm-routine',
+    title: 'Night skincare routine',
+    description: 'Double cleanse (oil then water-based cleanser) → Moisturizer. Do every night.',
+    category: 'skincare',
+    estimatedMinutes: 10,
+    weightKey: 'skinClarity',
+    frequency: 'daily',
+    tags: ['night'],
+  },
+  {
+    id: 'skin-exfoliant',
+    title: 'Apply AHA/BHA exfoliant',
+    description: 'Use on non-retinol nights only. Helps with texture, pores, and skin turnover. 2-3x per week max.',
+    category: 'skincare',
+    estimatedMinutes: 5,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+  {
+    id: 'skin-retinol',
+    title: 'Apply retinol serum',
+    description: 'Use on non-exfoliant nights only. Boosts collagen, fights acne, evens skin tone. Build up tolerance slowly.',
+    category: 'skincare',
+    estimatedMinutes: 5,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+  {
+    id: 'skin-bp-spot',
+    title: 'Benzoyl peroxide spot treatment',
+    description: 'Apply directly to active breakouts. Kills acne-causing bacteria. Don\'t overuse — dries skin.',
+    category: 'skincare',
+    estimatedMinutes: 3,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+  {
+    id: 'skin-eye-cream',
+    title: 'Apply caffeine eye cream',
+    description: 'Dab caffeine eye cream under eyes to reduce puffiness and dark circles. Use morning and night.',
+    category: 'skincare',
+    estimatedMinutes: 2,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+  {
+    id: 'skin-clay-mask',
+    title: 'Clay mask for pore detox',
+    description: 'Apply a clay mask (bentonite or kaolin) for 10-15 min to draw out impurities. Once per week.',
+    category: 'skincare',
+    estimatedMinutes: 15,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+    tags: ['weekly'],
+  },
+  {
+    id: 'skin-sheet-mask',
+    title: 'Hydrating sheet mask',
+    description: 'Apply a hydrating sheet mask for 15 min to boost moisture and glow. Once per week.',
+    category: 'skincare',
+    estimatedMinutes: 15,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+    tags: ['weekly'],
+  },
+
+  // ── JAWLINE & STRUCTURE (5) ──────────────────────────────────
+  {
+    id: 'jaw-mewing',
+    title: 'Conscious mewing practice',
+    description: 'Press entire tongue to roof of mouth, lips sealed, teeth lightly touching. Hold for 5 min focused.',
+    category: 'jawline',
+    estimatedMinutes: 5,
+    weightKey: 'jawlineDefinition',
+    frequency: 'daily',
+  },
+  {
+    id: 'jaw-gum',
+    title: 'Chew mastic or falim gum',
+    description: 'Chew for 10 min, alternating sides evenly. Strengthens masseter muscles. Don\'t exceed 15 min to protect TMJ.',
+    category: 'jawline',
+    estimatedMinutes: 10,
+    weightKey: 'jawlineDefinition',
+    frequency: 'rotating',
+  },
+  {
+    id: 'jaw-chin-tucks',
+    title: 'Chin tucks — 3 sets of 10',
+    description: 'Pull chin straight back (making a double chin). Hold 3 seconds per rep. Improves posture and neck alignment.',
+    category: 'jawline',
+    estimatedMinutes: 5,
+    weightKey: 'jawlineDefinition',
+    frequency: 'rotating',
+  },
+  {
+    id: 'jaw-stretches',
+    title: 'Neck and jaw stretches',
+    description: 'Do neck rotations, jaw opening stretches, and side stretches. Releases tension and improves jaw mobility.',
+    category: 'jawline',
+    estimatedMinutes: 5,
+    weightKey: 'jawlineDefinition',
+    frequency: 'rotating',
+  },
+  {
+    id: 'jaw-posture-reset',
+    title: 'Posture reset',
+    description: 'Stop resting chin on hand. Check head position — ears should be over shoulders. Reset throughout the day.',
+    category: 'jawline',
+    estimatedMinutes: 1,
+    weightKey: 'jawlineDefinition',
+    frequency: 'daily',
+  },
+
+  // ── WATER RETENTION & BLOAT (5) ──────────────────────────────
+  {
+    id: 'bloat-water-goal',
+    title: 'Hit daily water intake goal',
+    description: 'Drink half your body weight in ounces (or ~2-3 liters). Proper hydration reduces puffiness.',
+    category: 'hydration',
+    estimatedMinutes: 1,
+    weightKey: 'waterRetention',
+    frequency: 'daily',
+  },
+  {
+    id: 'bloat-sodium',
+    title: 'Keep sodium under 2,300mg',
+    description: 'Check nutrition labels on everything you eat today. Excess sodium = water retention = puffy face.',
+    category: 'hydration',
+    estimatedMinutes: 1,
+    weightKey: 'waterRetention',
+    frequency: 'daily',
+  },
+  {
+    id: 'bloat-potassium',
+    title: 'Eat one potassium-rich food',
+    description: 'Banana, sweet potato, avocado, or spinach. Potassium helps flush excess sodium and reduce bloating.',
+    category: 'hydration',
+    estimatedMinutes: 5,
+    weightKey: 'waterRetention',
+    frequency: 'rotating',
+  },
+  {
+    id: 'bloat-cold-splash',
+    title: 'Morning cold water face splash',
+    description: 'Splash cold water on face or use an ice roller for 2 min in the morning. Reduces puffiness fast.',
+    category: 'hydration',
+    estimatedMinutes: 2,
+    weightKey: 'waterRetention',
+    frequency: 'rotating',
+  },
+  {
+    id: 'bloat-no-alcohol',
+    title: 'No alcohol today',
+    description: 'Alcohol causes facial puffiness for 24-48 hours. Skip it to keep your face lean and defined.',
+    category: 'hydration',
+    estimatedMinutes: 1,
+    weightKey: 'waterRetention',
+    frequency: 'rotating',
+  },
+
+  // ── FITNESS (5) ──────────────────────────────────────────────
+  {
+    id: 'fit-cardio',
+    title: '20-30 min moderate cardio',
+    description: 'Run, bike, jump rope, or brisk walk. Reduces overall body fat, which reduces face fat and improves definition.',
+    category: 'fitness',
+    estimatedMinutes: 30,
+    weightKey: 'facialDefinition',
+    frequency: 'rotating',
+  },
+  {
+    id: 'fit-strength',
+    title: 'Strength training — compound lifts',
+    description: 'Upper or lower body split. Squats, deadlifts, bench, rows. Builds muscle, boosts metabolism, leans out your face.',
+    category: 'fitness',
+    estimatedMinutes: 45,
+    weightKey: 'facialDefinition',
+    frequency: 'rotating',
+  },
+  {
+    id: 'fit-neck',
+    title: 'Neck curls and extensions',
+    description: 'Light weight, 3 sets of 15-20 reps. Builds neck thickness which enhances jawline appearance.',
+    category: 'fitness',
+    estimatedMinutes: 10,
+    weightKey: 'jawlineDefinition',
+    frequency: 'rotating',
+  },
+  {
+    id: 'fit-steps',
+    title: '10,000 steps today',
+    description: 'Walk throughout the day. Low-intensity movement burns fat and improves circulation for better skin.',
+    category: 'fitness',
+    estimatedMinutes: 1,
+    weightKey: 'facialDefinition',
+    frequency: 'daily',
+  },
+  {
+    id: 'fit-core',
+    title: 'Core workout',
+    description: 'Planks, crunches, leg raises. 3 sets each. A strong core improves posture which improves facial appearance.',
+    category: 'fitness',
+    estimatedMinutes: 15,
+    weightKey: 'facialDefinition',
+    frequency: 'rotating',
+  },
+
+  // ── SLEEP (5) ────────────────────────────────────────────────
+  {
+    id: 'sleep-hours',
+    title: 'Get 7-9 hours of sleep tonight',
+    description: 'Set a bedtime alarm. Sleep is when your body repairs skin, reduces inflammation, and resets hormones.',
+    category: 'sleep',
+    estimatedMinutes: 1,
+    weightKey: 'skinClarity',
+    frequency: 'daily',
+  },
+  {
+    id: 'sleep-back',
+    title: 'Sleep on your back tonight',
+    description: 'Prevents face compression that causes asymmetry and wrinkles. Use a pillow to stay in position.',
+    category: 'sleep',
+    estimatedMinutes: 1,
+    weightKey: 'symmetry',
+    frequency: 'daily',
+  },
+  {
+    id: 'sleep-no-screens',
+    title: 'No screens 30 min before bed',
+    description: 'Read, stretch, or meditate instead. Blue light disrupts melatonin and worsens sleep quality.',
+    category: 'sleep',
+    estimatedMinutes: 30,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+  {
+    id: 'sleep-dark-cool',
+    title: 'Keep bedroom dark and cool',
+    description: '65-68°F, blackout curtains or eye mask. Cool, dark rooms dramatically improve sleep quality.',
+    category: 'sleep',
+    estimatedMinutes: 1,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+  {
+    id: 'sleep-magnesium',
+    title: 'Take magnesium before bed',
+    description: 'Magnesium glycinate or citrate 30 min before sleep. Improves sleep depth and muscle recovery.',
+    category: 'sleep',
+    estimatedMinutes: 2,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+
+  // ── GROOMING (4) ─────────────────────────────────────────────
+  {
+    id: 'groom-eyebrows',
+    title: 'Check and shape eyebrows',
+    description: 'Trim stray hairs, maintain a clean arch. Well-groomed brows frame your face and improve symmetry.',
+    category: 'grooming',
+    estimatedMinutes: 5,
+    weightKey: 'symmetry',
+    frequency: 'rotating',
+    tags: ['weekly'],
+  },
+  {
+    id: 'groom-facial-hair',
+    title: 'Groom facial hair for jawline',
+    description: 'Shape beard or stubble to enhance jaw angle. Clean neckline below jawbone. Accentuates definition.',
+    category: 'grooming',
+    estimatedMinutes: 10,
+    weightKey: 'jawlineDefinition',
+    frequency: 'rotating',
+  },
+  {
+    id: 'groom-posture-3x',
+    title: 'Posture check — 3x today',
+    description: 'Stand tall, shoulders back, chin level. Set 3 reminders. Good posture changes how your face looks dramatically.',
+    category: 'grooming',
+    estimatedMinutes: 1,
+    weightKey: 'facialDefinition',
+    frequency: 'daily',
+  },
+  {
+    id: 'groom-nails',
+    title: 'Trim and clean nails',
+    description: 'Keep nails short and clean. Part of overall grooming that builds confidence and self-care habits.',
+    category: 'grooming',
+    estimatedMinutes: 5,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+    tags: ['weekly'],
+  },
+
+  // ── NUTRITION (5) ────────────────────────────────────────────
+  {
+    id: 'nutr-protein',
+    title: 'Hit protein target today',
+    description: '0.8-1g per pound of body weight. Protein builds muscle and repairs skin. Track your intake.',
+    category: 'nutrition',
+    estimatedMinutes: 1,
+    weightKey: 'facialDefinition',
+    frequency: 'daily',
+  },
+  {
+    id: 'nutr-collagen',
+    title: 'Eat collagen-supporting foods',
+    description: 'Bone broth, vitamin C-rich fruits, or collagen peptides. Supports skin elasticity and repair.',
+    category: 'nutrition',
+    estimatedMinutes: 10,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+  {
+    id: 'nutr-omega3',
+    title: 'Eat omega-3 rich food',
+    description: 'Salmon, walnuts, flaxseed, or sardines. Reduces inflammation and improves skin from the inside out.',
+    category: 'nutrition',
+    estimatedMinutes: 10,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+  {
+    id: 'nutr-no-sugar',
+    title: 'No refined sugar today',
+    description: 'Sugar causes glycation (damages collagen) and spikes insulin (causes breakouts). Cut it completely today.',
+    category: 'nutrition',
+    estimatedMinutes: 1,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+  {
+    id: 'nutr-green-tea',
+    title: 'Drink 2+ cups of green tea',
+    description: 'Rich in antioxidants that protect skin. Mild caffeine boost without the crash of coffee.',
+    category: 'nutrition',
+    estimatedMinutes: 5,
+    weightKey: 'skinClarity',
+    frequency: 'rotating',
+  },
+
+  // ── CONFIDENCE (4) ───────────────────────────────────────────
+  {
+    id: 'conf-eye-contact',
+    title: 'Practice natural eye contact',
+    description: 'In conversations today, hold natural eye contact for 3 seconds at a time. Builds presence and confidence.',
+    category: 'confidence',
+    estimatedMinutes: 1,
+    weightKey: 'symmetry',
+    frequency: 'daily',
+  },
+  {
+    id: 'conf-social',
+    title: 'One meaningful social interaction',
+    description: 'Have at least one genuine in-person conversation today. Social connection builds confidence and reduces stress.',
+    category: 'confidence',
+    estimatedMinutes: 1,
+    weightKey: 'symmetry',
+    frequency: 'daily',
+  },
+  {
+    id: 'conf-self-talk',
+    title: 'Positive self-talk practice',
+    description: 'Catch and reframe 3 negative thoughts about your appearance today. Replace with neutral or positive ones.',
+    category: 'confidence',
+    estimatedMinutes: 5,
+    weightKey: 'symmetry',
+    frequency: 'rotating',
+  },
+  {
+    id: 'conf-mirror',
+    title: 'Mirror confidence practice',
+    description: 'Stand in front of a mirror for 2 min. Practice confident posture and a relaxed, natural expression.',
+    category: 'confidence',
+    estimatedMinutes: 2,
+    weightKey: 'symmetry',
+    frequency: 'rotating',
+  },
+];
+
+export const CATEGORY_ICONS: Record<TaskCategory, string> = {
+  skincare: 'sparkles-outline',
+  jawline: 'triangle-outline',
+  hydration: 'water-outline',
+  fitness: 'barbell-outline',
+  sleep: 'moon-outline',
+  grooming: 'cut-outline',
+  nutrition: 'leaf-outline',
+  confidence: 'eye-outline',
+};
+
+export const CATEGORY_COLORS: Record<TaskCategory, string> = {
+  skincare: '#FF6BCA',
+  jawline: '#00E5FF',
+  hydration: '#4FC3F7',
+  fitness: '#FF8A65',
+  sleep: '#B388FF',
+  grooming: '#FFD54F',
+  nutrition: '#69F0AE',
+  confidence: '#FFB74D',
+};
