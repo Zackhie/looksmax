@@ -1,0 +1,12 @@
+Welcome to Lock In AI — your personal looksmaxxing companion.
+
+What's included in v1.0.0:
+- AI face scanner with real facial landmark analysis (symmetry, jawline, definition, skin clarity, water retention)
+- 41 personalized daily tasks across 5 categories with streak tracking and XP system
+- Water intake tracker with progress ring, weekly charts, and smart reminders
+- Progress dashboard with score trends, achievement badges, and Lock In Score
+- Push notifications for morning tasks, hydration reminders, and weekly scan check-ins
+- Full dark mode UI designed for focus
+- All data stays on-device — complete privacy, no accounts required
+
+Lock in. Level up. Become the version of you that turns heads.

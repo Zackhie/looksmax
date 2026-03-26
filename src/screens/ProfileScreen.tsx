@@ -13,6 +13,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES, DEFAULT_WATER_GOAL_OZ } from '../constants';
 import { Goal, GOAL_LABELS, UserProfile } from '../types';
 import { getUserProfile, saveUserProfile, clearAllData } from '../services/storage';
+import {
+  getNotificationPrefs,
+  toggleReminderCategory,
+  checkNotificationPermissions,
+  openNotificationSettings,
+  NotificationPrefs,
+} from '../services/notifications';
 
 const GOALS: Goal[] = ['jawline', 'skin', 'symmetry', 'bloat', 'overall'];
 const APP_VERSION = '1.0.0';
@@ -25,14 +32,34 @@ export default function ProfileScreen() {
   const [selectedGoals, setSelectedGoals] = useState<Goal[]>([]);
   const [dirty, setDirty] = useState(false);
 
-  // Notification prefs (stored locally, not wired to push yet)
+  // Notification prefs
   const [taskReminders, setTaskReminders] = useState(true);
   const [waterReminders, setWaterReminders] = useState(true);
   const [scanReminders, setScanReminders] = useState(true);
+  const [notifPermissionGranted, setNotifPermissionGranted] = useState(true);
 
   useEffect(() => {
     loadProfile();
+    loadNotificationState();
   }, []);
+
+  const loadNotificationState = async () => {
+    const granted = await checkNotificationPermissions();
+    setNotifPermissionGranted(granted);
+    const prefs = await getNotificationPrefs();
+    setTaskReminders(prefs.taskReminders);
+    setWaterReminders(prefs.waterReminders);
+    setScanReminders(prefs.scanReminders);
+  };
+
+  const handleToggleReminder = async (
+    category: keyof NotificationPrefs,
+    value: boolean,
+    setter: (v: boolean) => void
+  ) => {
+    setter(value);
+    await toggleReminderCategory(category, value);
+  };
 
   const loadProfile = async () => {
     const p = await getUserProfile();
@@ -199,6 +226,20 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Notifications</Text>
 
+        {!notifPermissionGranted && (
+          <TouchableOpacity
+            style={styles.permissionBanner}
+            onPress={openNotificationSettings}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="notifications-off-outline" size={18} color={COLORS.warning} />
+            <Text style={styles.permissionBannerText}>
+              Notifications are disabled. Tap to enable them in your device settings.
+            </Text>
+            <Ionicons name="open-outline" size={14} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        )}
+
         <View style={styles.toggleRow}>
           <View style={styles.toggleInfo}>
             <Ionicons name="alarm-outline" size={20} color={COLORS.textSecondary} />
@@ -206,7 +247,7 @@ export default function ProfileScreen() {
           </View>
           <Switch
             value={taskReminders}
-            onValueChange={setTaskReminders}
+            onValueChange={(v) => handleToggleReminder('taskReminders', v, setTaskReminders)}
             trackColor={{ false: COLORS.border, true: COLORS.primaryDim }}
             thumbColor={taskReminders ? COLORS.primary : COLORS.textMuted}
           />
@@ -219,7 +260,7 @@ export default function ProfileScreen() {
           </View>
           <Switch
             value={waterReminders}
-            onValueChange={setWaterReminders}
+            onValueChange={(v) => handleToggleReminder('waterReminders', v, setWaterReminders)}
             trackColor={{ false: COLORS.border, true: COLORS.primaryDim }}
             thumbColor={waterReminders ? COLORS.primary : COLORS.textMuted}
           />
@@ -232,7 +273,7 @@ export default function ProfileScreen() {
           </View>
           <Switch
             value={scanReminders}
-            onValueChange={setScanReminders}
+            onValueChange={(v) => handleToggleReminder('scanReminders', v, setScanReminders)}
             trackColor={{ false: COLORS.border, true: COLORS.primaryDim }}
             thumbColor={scanReminders ? COLORS.primary : COLORS.textMuted}
           />
@@ -371,6 +412,24 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontWeight: '700',
     color: COLORS.background,
+  },
+  permissionBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
+    backgroundColor: 'rgba(255, 184, 0, 0.1)',
+    borderRadius: SIZES.radiusMd,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 184, 0, 0.3)',
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm + 2,
+    marginBottom: SIZES.sm,
+  },
+  permissionBannerText: {
+    flex: 1,
+    fontSize: SIZES.fontXs,
+    color: COLORS.warning,
+    lineHeight: 16,
   },
   toggleRow: {
     flexDirection: 'row',

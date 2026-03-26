@@ -24,6 +24,7 @@ import {
   getWeeklyTotals,
   DailyTotal,
 } from '../services/waterStorage';
+import { updateWaterReminders } from '../services/notifications';
 import WaterProgressRing from '../components/WaterProgressRing';
 import WeeklyWaterChart from '../components/WeeklyWaterChart';
 
@@ -74,6 +75,8 @@ export default function WaterScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await addWaterEntry(oz);
     await loadData();
+    // Recalculate water reminders — stops sending if goal is met
+    updateWaterReminders();
   };
 
   const handleCustomAdd = async () => {

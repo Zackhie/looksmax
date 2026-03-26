@@ -14,6 +14,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES, DEFAULT_WATER_GOAL_OZ } from '../constants';
 import { Goal, GOAL_LABELS, UserProfile } from '../types';
 import { saveUserProfile, setOnboardingComplete } from '../services/storage';
+import {
+  requestNotificationPermissions,
+  configureNotifications,
+  scheduleAllReminders,
+} from '../services/notifications';
 
 interface Props {
   onComplete: () => void;
@@ -71,6 +76,12 @@ export default function ProfileSetupScreen({ onComplete }: Props) {
 
     await saveUserProfile(profile);
     await setOnboardingComplete(true);
+
+    // Request notification permissions (skip gracefully if denied)
+    configureNotifications();
+    await requestNotificationPermissions();
+    await scheduleAllReminders();
+
     onComplete();
   };
 
