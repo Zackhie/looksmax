@@ -14,6 +14,7 @@ import { DailyTask } from '../types';
 import { getUserProfile } from '../services/storage';
 import { getLatestScan } from '../services/scanStorage';
 import { generateDailyTasks } from '../services/taskGenerator';
+import { getTodayTotal } from '../services/waterStorage';
 import {
   loadDailyTasks,
   saveDailyTasks,
@@ -98,6 +99,19 @@ export default function HomeScreen() {
       todayTasks = generateDailyTasks(latestScan, yesterdayIds);
       await saveDailyTasks(todayTasks);
     }
+    // Auto-complete water goal task if water intake met
+    const profile2 = await getUserProfile();
+    if (profile2) {
+      const waterTotal = await getTodayTotal();
+      if (waterTotal >= profile2.waterGoalOz) {
+        const waterTask = todayTasks.find((t) => t.id === 'bloat-water-goal');
+        if (waterTask && !waterTask.completed) {
+          waterTask.completed = true;
+          await saveDailyTasks(todayTasks);
+        }
+      }
+    }
+
     setTasks(todayTasks);
     setLoading(false);
   };

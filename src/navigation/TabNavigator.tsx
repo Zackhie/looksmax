@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants';
+import { isHydrationReminder } from '../services/waterStorage';
+import { getUserProfile } from '../services/storage';
 
 import HomeScreen from '../screens/HomeScreen';
 import ScanScreen from '../screens/ScanScreen';
@@ -14,6 +16,22 @@ import ScanTabButton from '../components/ScanTabButton';
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
+  const [waterBadge, setWaterBadge] = useState(false);
+
+  useEffect(() => {
+    checkHydration();
+    // Re-check every 5 minutes
+    const interval = setInterval(checkHydration, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const checkHydration = async () => {
+    const profile = await getUserProfile();
+    const goalOz = profile?.waterGoalOz ?? 80;
+    const needsReminder = await isHydrationReminder(goalOz);
+    setWaterBadge(needsReminder);
+  };
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -22,6 +40,12 @@ export default function TabNavigator() {
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textMuted,
         tabBarLabelStyle: styles.tabLabel,
+      }}
+      screenListeners={{
+        tabPress: () => {
+          // Refresh hydration badge when switching tabs
+          checkHydration();
+        },
       }}
     >
       <Tab.Screen
@@ -40,6 +64,8 @@ export default function TabNavigator() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="water-outline" size={size} color={color} />
           ),
+          tabBarBadge: waterBadge ? '!' : undefined,
+          tabBarBadgeStyle: waterBadge ? styles.waterBadge : undefined,
         }}
       />
       <Tab.Screen
@@ -90,5 +116,13 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 11,
     fontWeight: '600',
+  },
+  waterBadge: {
+    backgroundColor: COLORS.primary,
+    fontSize: 10,
+    fontWeight: '700',
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
   },
 });
