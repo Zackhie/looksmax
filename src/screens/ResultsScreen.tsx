@@ -43,11 +43,12 @@ const WATER_RETENTION_SCORE: Record<string, number> = {
 
 interface Props {
   photoUri: string;
+  mlScores?: FaceScan['scores'] | null;
   onScanAgain: () => void;
   onDone: () => void;
 }
 
-export default function ResultsScreen({ photoUri, onScanAgain, onDone }: Props) {
+export default function ResultsScreen({ photoUri, mlScores, onScanAgain, onDone }: Props) {
   const [scan, setScan] = useState<FaceScan | null>(null);
   const [previousScan, setPreviousScan] = useState<FaceScan | null>(null);
   const [saved, setSaved] = useState(false);
@@ -60,7 +61,8 @@ export default function ResultsScreen({ photoUri, onScanAgain, onDone }: Props) 
     const prev = await getLatestScan();
     setPreviousScan(prev);
 
-    const scores = generateMockScores(prev);
+    // Use real ML Kit scores if available, otherwise fall back to mock
+    const scores = mlScores ?? generateMockScores(prev);
     const newScan = createFaceScan(photoUri, scores);
     setScan(newScan);
   };
