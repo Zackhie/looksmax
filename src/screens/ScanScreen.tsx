@@ -1,14 +1,39 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { COLORS, SIZES } from '../constants';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { COLORS } from '../constants';
+import CameraScreen from './CameraScreen';
+import ResultsScreen from './ResultsScreen';
+
+type ScanState =
+  | { step: 'camera' }
+  | { step: 'results'; photoUri: string };
 
 export default function ScanScreen() {
+  const [state, setState] = useState<ScanState>({ step: 'camera' });
+
+  const handlePhotoTaken = (uri: string) => {
+    setState({ step: 'results', photoUri: uri });
+  };
+
+  const handleScanAgain = () => {
+    setState({ step: 'camera' });
+  };
+
+  const handleDone = () => {
+    setState({ step: 'camera' });
+  };
+
   return (
     <View style={styles.container}>
-      <Ionicons name="scan-outline" size={64} color={COLORS.primary} />
-      <Text style={styles.title}>Face Scanner</Text>
-      <Text style={styles.subtitle}>AI-powered facial analysis coming in Phase 2</Text>
+      {state.step === 'camera' ? (
+        <CameraScreen onPhotoTaken={handlePhotoTaken} />
+      ) : (
+        <ResultsScreen
+          photoUri={state.photoUri}
+          onScanAgain={handleScanAgain}
+          onDone={handleDone}
+        />
+      )}
     </View>
   );
 }
@@ -17,19 +42,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: SIZES.lg,
-    gap: SIZES.md,
-  },
-  title: {
-    fontSize: SIZES.fontXl,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  subtitle: {
-    fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
   },
 });
